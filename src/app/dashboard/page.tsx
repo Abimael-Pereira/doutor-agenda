@@ -17,6 +17,8 @@ const DashboardPage = async () => {
     redirect("/authentication");
   }
 
+  console.log(session.user);
+
   const clinics = await db.query.usersToClinicsTable.findMany({
     where: eq(usersToClinicsTable.userId, session?.user.id),
   });
