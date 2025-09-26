@@ -83,6 +83,7 @@ const UpsertDoctorForm = ({ onSuccess }: UpsertDoctorFormProps) => {
     },
     onError: () => {
       toast.error("Erro ao salvar médico");
+      form.reset();
     },
   });
 
