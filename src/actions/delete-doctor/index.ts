@@ -11,7 +11,7 @@ import { auth } from "@/lib/auth";
 import { actionClient } from "@/lib/safe-action";
 
 export const deleteDoctor = actionClient
-  .schema(z.object({ id: z.uuid() }))
+  .inputSchema(z.object({ id: z.uuid() }))
   .action(async ({ parsedInput }) => {
     const session = await auth.api.getSession({
       headers: await headers(),
