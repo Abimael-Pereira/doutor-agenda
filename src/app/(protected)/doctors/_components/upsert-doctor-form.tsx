@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { TrashIcon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { NumericFormat } from "react-number-format";
 import { toast } from "sonner";
@@ -71,12 +72,19 @@ const formSchema = z
     },
   );
 
+//TODO: separar essa repetição de schema em um arquivo separado
+
 interface UpsertDoctorFormProps {
+  isOpen?: boolean;
   onSuccess?: () => void;
   doctor?: typeof doctorsTable.$inferSelect;
 }
 
-const UpsertDoctorForm = ({ onSuccess, doctor }: UpsertDoctorFormProps) => {
+const UpsertDoctorForm = ({
+  onSuccess,
+  doctor,
+  isOpen,
+}: UpsertDoctorFormProps) => {
   const form = useForm({
     shouldUnregister: true,
     resolver: zodResolver(formSchema),
@@ -92,6 +100,24 @@ const UpsertDoctorForm = ({ onSuccess, doctor }: UpsertDoctorFormProps) => {
       availableToTime: doctor?.availableToTime ?? "",
     },
   });
+
+  useEffect(() => {
+    if (!isOpen) {
+      form.reset({
+        name: doctor?.name ?? "",
+        specialty: doctor?.specialty ?? "",
+        appointmentPrice: doctor?.appointmentPriceInCents
+          ? doctor.appointmentPriceInCents / 100
+          : 0,
+        availableFromWeekDay: doctor?.availableFromWeekDay.toString() ?? "1",
+        availableToWeekDay: doctor?.availableToWeekDay.toString() ?? "5",
+        availableFromTime: doctor?.availableFromTime ?? "",
+        availableToTime: doctor?.availableToTime ?? "",
+      });
+    }
+  }, [isOpen, form, doctor]);
+
+  //TODO: melhorar a repetição dos dados do formSchema e do defaultValues
 
   const upsertDoctorAction = useAction(upsertDoctor, {
     onSuccess: () => {
