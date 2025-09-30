@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import type { doctorsTable, patientsTable } from "@/db/schema";
 
-import { UpsertAppointmentForm } from "./upsert-appointment-form";
+import { AddAppointmentForm } from "./add-appointment-form";
 
 interface AddAppointmentButtonProps {
   doctors: (typeof doctorsTable.$inferSelect)[];
@@ -40,7 +40,7 @@ export function AddAppointmentButton({
         <DialogHeader>
           <DialogTitle>Novo Agendamento</DialogTitle>
         </DialogHeader>
-        <UpsertAppointmentForm
+        <AddAppointmentForm
           doctors={doctors}
           patients={patients}
           onSuccess={() => setIsOpen(false)}

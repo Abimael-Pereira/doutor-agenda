@@ -41,17 +41,17 @@ import {
 } from "@/components/ui/select";
 import type { doctorsTable, patientsTable } from "@/db/schema";
 
-interface CreateAppointmentFormProps {
+interface AddAppointmentFormProps {
   doctors: (typeof doctorsTable.$inferSelect)[];
   patients: (typeof patientsTable.$inferSelect)[];
   onSuccess?: () => void;
 }
 
-export function CreateAppointmentForm({
+export function AddAppointmentForm({
   doctors,
   patients,
   onSuccess,
-}: CreateAppointmentFormProps) {
+}: AddAppointmentFormProps) {
   const form = useForm<CreateAppointmentSchema>({
     resolver: zodResolver(createAppointmentSchema),
     defaultValues: {
