@@ -9,6 +9,7 @@ import { appointmentsTable } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { actionClient } from "@/lib/safe-action";
 
+import { getAvailableTimes } from "../get-available-times";
 import { createAppointmentSchema } from "./schema";
 
 export const createAppointment = actionClient
@@ -24,6 +25,21 @@ export const createAppointment = actionClient
     const clinic = session.user.clinic;
     if (!clinic.id) {
       throw new Error("Usuário não pertence a nenhuma clínica");
+    }
+
+    const availableTimes = await getAvailableTimes({
+      doctorId: parsedInput.doctorId,
+      date: dayjs(parsedInput.date).format("YYYY-MM-DD"),
+    });
+    if (!availableTimes.data) {
+      throw new Error("Erro ao verificar horários disponíveis");
+    }
+
+    const isTimeAvailable = availableTimes.data?.some(
+      (time) => time.value === parsedInput.time && time.available,
+    );
+    if (!isTimeAvailable) {
+      throw new Error("Horário não disponível");
     }
 
     const [hours, minutes] = parsedInput.time.split(":");

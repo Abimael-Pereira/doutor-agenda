@@ -92,7 +92,6 @@ export function AddAppointmentForm({
     },
   });
 
-  // Atualizar o preço quando o médico é selecionado
   useEffect(() => {
     if (selectedDoctorId) {
       const selectedDoctor = doctors.find(
