@@ -109,6 +109,22 @@ export function AddAppointmentForm({
 
   const isPatientAndDoctorSelected = selectedPatientId && selectedDoctorId;
 
+  const isDataAvailable = (date: Date) => {
+    if (!selectedDoctorId) return false;
+
+    const selectedDoctor = doctors.find(
+      (doctor) => doctor.id === selectedDoctorId,
+    );
+    if (!selectedDoctor) return false;
+
+    const dayOfWeek = date.getDay();
+
+    return (
+      dayOfWeek >= selectedDoctor.availableFromWeekDay &&
+      dayOfWeek <= selectedDoctor.availableToWeekDay
+    );
+  };
+
   const onSubmit = async (data: CreateAppointmentSchema) => {
     await executeAsync(data);
   };
@@ -239,7 +255,9 @@ export function AddAppointmentForm({
                     mode="single"
                     selected={field.value}
                     onSelect={field.onChange}
-                    disabled={(date) => date < new Date()}
+                    disabled={(date) =>
+                      date < new Date() || !isDataAvailable(date)
+                    }
                     autoFocus
                     locale={ptBR}
                   />
@@ -270,7 +288,11 @@ export function AddAppointmentForm({
                 </FormControl>
                 <SelectContent>
                   {availableTimes?.data?.map((time) => (
-                    <SelectItem key={time.value} value={time.value}>
+                    <SelectItem
+                      key={time.value}
+                      value={time.value}
+                      disabled={time.available === false}
+                    >
                       {time.label} {time.available === false && "Indisponível"}
                     </SelectItem>
                   ))}

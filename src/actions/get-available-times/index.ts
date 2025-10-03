@@ -3,7 +3,7 @@
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
-import { and, eq } from "drizzle-orm";
+import { and, eq, gte, lt } from "drizzle-orm";
 import { headers } from "next/headers";
 import z from "zod";
 
@@ -49,11 +49,15 @@ export const getAvailableTimes = actionClient
       return [];
     }
 
+    const startOfDay = dayjs(parsedInput.date).startOf("day").toDate();
+    const endOfDay = dayjs(parsedInput.date).endOf("day").toDate();
+
     const appointmentsOnSelectedDate = (
       await db.query.appointmentsTable.findMany({
         where: and(
           eq(appointmentsTable.doctorId, parsedInput.doctorId),
-          eq(appointmentsTable.date, new Date(parsedInput.date)),
+          gte(appointmentsTable.date, startOfDay),
+          lt(appointmentsTable.date, endOfDay),
         ),
       })
     ).map((appointment) => dayjs(appointment.date).format("HH:mm:ss"));
@@ -85,6 +89,7 @@ export const getAvailableTimes = actionClient
         date.format("HH:mm:ss") <= doctorAvailableTo.format("HH:mm:ss")
       );
     });
+
     return doctorTimeSlots.map((time) => {
       return {
         value: time,
