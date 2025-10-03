@@ -1,8 +1,10 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import dayjs from "dayjs";
 import { CalendarIcon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { useEffect } from "react";
@@ -16,6 +18,7 @@ import {
   type CreateAppointmentSchema,
   createAppointmentSchema,
 } from "@/actions/create-appointment/schema";
+import { getAvailableTimes } from "@/actions/get-available-times";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -58,7 +61,22 @@ export function AddAppointmentForm({
       patientId: "",
       doctorId: "",
       date: undefined,
+      time: "",
       appointmentPriceInCents: 0,
+    },
+  });
+
+  const selectedDoctorId = form.watch("doctorId");
+  const selectedPatientId = form.watch("patientId");
+  const selectedDate = form.watch("date");
+
+  const { data: availableTimes } = useQuery({
+    queryKey: ["available-times", selectedDate, selectedDoctorId],
+    queryFn: async () => {
+      return getAvailableTimes({
+        date: dayjs(selectedDate).format("YYYY-MM-DD"),
+        doctorId: selectedDoctorId!,
+      });
     },
   });
 
@@ -73,14 +91,11 @@ export function AddAppointmentForm({
     },
   });
 
-  const watchedDoctorId = form.watch("doctorId");
-  const watchedPatientId = form.watch("patientId");
-
   // Atualizar o preço quando o médico é selecionado
   useEffect(() => {
-    if (watchedDoctorId) {
+    if (selectedDoctorId) {
       const selectedDoctor = doctors.find(
-        (doctor) => doctor.id === watchedDoctorId,
+        (doctor) => doctor.id === selectedDoctorId,
       );
       if (selectedDoctor) {
         form.setValue(
@@ -89,9 +104,9 @@ export function AddAppointmentForm({
         );
       }
     }
-  }, [watchedDoctorId, doctors, form]);
+  }, [selectedDoctorId, doctors, form]);
 
-  const isPatientAndDoctorSelected = watchedPatientId && watchedDoctorId;
+  const isPatientAndDoctorSelected = selectedPatientId && selectedDoctorId;
 
   const onSubmit = async (data: CreateAppointmentSchema) => {
     await executeAsync(data);
@@ -181,7 +196,7 @@ export function AddAppointmentForm({
                   decimalScale={2}
                   fixedDecimalScale
                   allowNegative={false}
-                  disabled={!watchedDoctorId || isExecuting}
+                  disabled={!selectedDoctorId || isExecuting}
                   value={field.value / 100}
                   onValueChange={(values) => {
                     field.onChange(Math.round((values.floatValue || 0) * 100));
@@ -199,7 +214,7 @@ export function AddAppointmentForm({
           name="date"
           render={({ field }) => (
             <FormItem className="flex flex-col">
-              <FormLabel>Data e Horário</FormLabel>
+              <FormLabel>Data</FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
                   <FormControl>
@@ -236,21 +251,26 @@ export function AddAppointmentForm({
 
         <FormField
           control={form.control}
-          name="date"
+          name="time"
           render={() => (
             <FormItem>
               <FormLabel>Horário</FormLabel>
-              <Select disabled={!isPatientAndDoctorSelected || isExecuting}>
+              <Select
+                disabled={
+                  !isPatientAndDoctorSelected || !selectedDate || isExecuting
+                }
+              >
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione um horário" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {/* TODO: Implementar lógica de horários disponíveis */}
-                  <SelectItem value="placeholder" disabled>
-                    Horários serão implementados
-                  </SelectItem>
+                  {availableTimes?.data?.map((time) => (
+                    <SelectItem key={time.value} value={time.value}>
+                      {time.label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               <FormMessage />

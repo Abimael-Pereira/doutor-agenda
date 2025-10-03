@@ -10,6 +10,9 @@ export const createAppointmentSchema = z.object({
   date: z.date({
     message: "Selecione uma data e horário",
   }),
+  time: z.string({
+    message: "Selecione um horário",
+  }),
   appointmentPriceInCents: z
     .number({
       message: "O valor da consulta é obrigatório",

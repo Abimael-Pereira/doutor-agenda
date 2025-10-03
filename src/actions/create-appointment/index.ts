@@ -1,5 +1,6 @@
 "use server";
 
+import dayjs from "dayjs";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 
@@ -25,12 +26,18 @@ export const createAppointment = actionClient
       throw new Error("Usuário não pertence a nenhuma clínica");
     }
 
-    // Create new appointment
+    const [hours, minutes] = parsedInput.time.split(":");
+    const appointmentDateTime = dayjs(parsedInput.date)
+      .hour(parseInt(hours))
+      .minute(parseInt(minutes))
+      .second(0)
+      .toDate();
+
     await db.insert(appointmentsTable).values({
       patientId: parsedInput.patientId,
       doctorId: parsedInput.doctorId,
       clinicId: clinic.id,
-      date: parsedInput.date,
+      date: appointmentDateTime,
       appointmentPriceInCents: parsedInput.appointmentPriceInCents,
     });
 
