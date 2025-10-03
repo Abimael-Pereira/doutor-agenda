@@ -78,6 +78,7 @@ export function AddAppointmentForm({
         doctorId: selectedDoctorId!,
       });
     },
+    enabled: !!selectedDate && !!selectedDoctorId,
   });
 
   const { executeAsync, isExecuting } = useAction(createAppointment, {
@@ -252,13 +253,15 @@ export function AddAppointmentForm({
         <FormField
           control={form.control}
           name="time"
-          render={() => (
+          render={({ field }) => (
             <FormItem>
               <FormLabel>Horário</FormLabel>
               <Select
                 disabled={
                   !isPatientAndDoctorSelected || !selectedDate || isExecuting
                 }
+                onValueChange={field.onChange}
+                defaultValue={field.value}
               >
                 <FormControl>
                   <SelectTrigger>
@@ -268,7 +271,7 @@ export function AddAppointmentForm({
                 <SelectContent>
                   {availableTimes?.data?.map((time) => (
                     <SelectItem key={time.value} value={time.value}>
-                      {time.label}
+                      {time.label} {time.available === false && "Indisponível"}
                     </SelectItem>
                   ))}
                 </SelectContent>
