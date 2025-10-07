@@ -1,5 +1,6 @@
-import { addMonths, format } from "date-fns";
-import { and, count, eq, gte, lte, sum } from "drizzle-orm";
+import { addDays, addMonths, format } from "date-fns";
+import dayjs from "dayjs";
+import { and, count, eq, gte, lte, sql, sum } from "drizzle-orm";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -16,6 +17,7 @@ import { db } from "@/db";
 import { appointmentsTable, doctorsTable, patientsTable } from "@/db/schema";
 import { auth } from "@/lib/auth";
 
+import AppointmentChart from "./_components/appointment-chart";
 import { DatePicker } from "./_components/date-picker";
 import StatsCards from "./_components/stats-cards";
 
@@ -57,7 +59,7 @@ const DashboardPage = async ({ searchParams }: DashboardPageProps) => {
           and(
             eq(appointmentsTable.clinicId, clinic.id!),
             gte(appointmentsTable.date, new Date(from)),
-            lte(appointmentsTable.date, new Date(to)),
+            lte(appointmentsTable.date, addDays(new Date(to), 1)),
           ),
         )
         .then((result) => result[0]),
@@ -68,7 +70,7 @@ const DashboardPage = async ({ searchParams }: DashboardPageProps) => {
           and(
             eq(appointmentsTable.clinicId, clinic.id!),
             gte(appointmentsTable.date, new Date(from)),
-            lte(appointmentsTable.date, new Date(to)),
+            lte(appointmentsTable.date, addDays(new Date(to), 1)),
           ),
         )
         .then((result) => result[0]),
@@ -83,6 +85,29 @@ const DashboardPage = async ({ searchParams }: DashboardPageProps) => {
         .where(and(eq(doctorsTable.clinicId, clinic.id!)))
         .then((result) => result[0]),
     ]);
+
+  const chartStartDate = dayjs().subtract(10, "days").startOf("day").toDate();
+  const chartEndDate = dayjs().add(10, "days").endOf("day").toDate();
+
+  const dailyAppointmentsData = await db
+    .select({
+      date: sql<string>`DATE(${appointmentsTable.date})`.as("date"),
+      appointments: count(appointmentsTable.id),
+      revenue:
+        sql<number>`COALESCE(SUM(${appointmentsTable.appointmentPriceInCents}), 0)`.as(
+          "revenue",
+        ),
+    })
+    .from(appointmentsTable)
+    .where(
+      and(
+        eq(appointmentsTable.clinicId, clinic.id!),
+        gte(appointmentsTable.date, chartStartDate),
+        lte(appointmentsTable.date, chartEndDate),
+      ),
+    )
+    .groupBy(sql`DATE(${appointmentsTable.date})`)
+    .orderBy(sql`DATE(${appointmentsTable.date})`);
 
   return (
     <PageContainer>
@@ -104,6 +129,9 @@ const DashboardPage = async ({ searchParams }: DashboardPageProps) => {
           totalPatients={totalPatients}
           totalDoctors={totalDoctors}
         />
+        <div className="grid grid-cols-[2.25fr_1fr]">
+          <AppointmentChart dailyAppointmentsData={dailyAppointmentsData} />
+        </div>
       </PageContent>
     </PageContainer>
   );
