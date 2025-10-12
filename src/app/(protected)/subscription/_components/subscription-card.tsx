@@ -1,5 +1,10 @@
-import { CheckCircle2 } from "lucide-react";
+"use client";
 
+import { loadStripe } from "@stripe/stripe-js";
+import { CheckCircle2, Loader2 } from "lucide-react";
+import { useAction } from "next-safe-action/hooks";
+
+import { createStripeCheckout } from "@/actions/create-stripe-checkout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -30,6 +35,29 @@ const PricingCard = ({
   priceUnit,
   features,
 }: PricingCardProps) => {
+  const createStripeCheckoutAction = useAction(createStripeCheckout, {
+    onSuccess: async ({ data }) => {
+      if (!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
+        throw new Error("Stripe publishable key not found");
+      }
+      const stripe = await loadStripe(
+        process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
+      );
+      if (!stripe) {
+        throw new Error("Stripe not initialized");
+      }
+
+      if (!data.sessionId) {
+        throw new Error("Session ID not found");
+      }
+
+      await stripe.redirectToCheckout({ sessionId: data.sessionId });
+    },
+  });
+
+  const handleSubscribeClick = () => {
+    createStripeCheckoutAction.execute();
+  };
   return (
     <Card className="max-w-[280px] space-y-3">
       <CardHeader className="gap-3">
@@ -65,7 +93,15 @@ const PricingCard = ({
       <Separator />
 
       <CardFooter>
-        <Button variant="outline" className="w-full bg-transparent">
+        <Button
+          variant="outline"
+          className="w-full bg-transparent"
+          onClick={active ? undefined : handleSubscribeClick}
+          disabled={createStripeCheckoutAction.isExecuting}
+        >
+          {createStripeCheckoutAction.isExecuting && (
+            <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+          )}
           {active ? "Gerenciar assinatura" : "Fazer assinatura"}
         </Button>
       </CardFooter>

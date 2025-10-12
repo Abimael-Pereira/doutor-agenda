@@ -20,7 +20,7 @@ const SubscriptionPage = () => {
       </PageHeader>
       <PageContent>
         <PricingCard
-          active={true}
+          active={false}
           planName="Essential"
           description="Para profissionais autônomos ou pequenas clínicas"
           price="R$59"
