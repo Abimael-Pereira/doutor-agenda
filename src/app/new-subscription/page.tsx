@@ -12,9 +12,6 @@ const SubscriptionPage = async () => {
   if (!session) {
     redirect("/authentication");
   }
-  if (!session.user.clinic.id) {
-    redirect("/clinic-form");
-  }
   if (session.user.plan === "essential") {
     redirect("/dashboard");
   }

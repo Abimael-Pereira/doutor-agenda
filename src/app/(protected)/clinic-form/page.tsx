@@ -23,14 +23,8 @@ const ClinicFormPage = async () => {
     redirect("/new-subscription");
   }
 
-  const handleOpenChange = (open: boolean) => {
-    if (!open) {
-      redirect("/dashboard");
-    }
-  };
-
   return (
-    <Dialog open={true} onOpenChange={handleOpenChange}>
+    <Dialog open>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Adicionar clínica</DialogTitle>

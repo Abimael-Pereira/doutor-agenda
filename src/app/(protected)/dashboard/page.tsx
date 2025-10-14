@@ -40,8 +40,6 @@ const DashboardPage = async ({ searchParams }: DashboardPageProps) => {
     redirect("/authentication");
   }
 
-  console.log(session.user.clinic);
-
   if (!session.user.clinic.id) {
     redirect("/clinic-form");
   }
