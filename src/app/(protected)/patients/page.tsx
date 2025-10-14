@@ -31,6 +31,12 @@ const PatientsPage = async () => {
     redirect("/clinic-form");
   }
 
+  console.log(session.user.plan);
+
+  if (session.user.plan === "free") {
+    redirect("/new-subscription");
+  }
+
   const patients = await db.query.patientsTable.findMany({
     where: eq(patientsTable.clinicId, session.user.clinic.id),
   });

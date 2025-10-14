@@ -20,18 +20,23 @@ export const auth = betterAuth({
   },
   plugins: [
     customSession(async ({ user, session }) => {
-      const clinics = await db.query.usersToClinicsTable.findMany({
-        where: eq(schema.usersToClinicsTable.userId, user.id),
-        with: {
-          clinic: true,
-          user: true,
-        },
-      });
+      const [userResult, clinics] = await Promise.all([
+        db.query.usersTable.findFirst({
+          where: eq(schema.usersTable.id, user.id),
+        }),
+        db.query.usersToClinicsTable.findMany({
+          where: eq(schema.usersToClinicsTable.userId, user.id),
+          with: {
+            clinic: true,
+            user: true,
+          },
+        }),
+      ]);
       const clinic = clinics[0];
       return {
         user: {
           ...user,
-          plan: clinic.user.plan,
+          plan: userResult?.plan,
           clinic: {
             id: clinic?.clinicId || null,
             name: clinic?.clinic.name || null,
@@ -57,7 +62,8 @@ export const auth = betterAuth({
       plan: {
         type: "string",
         fieldName: "plan",
-        required: true,
+        required: false,
+        defaultValue: "free",
       },
     },
   },

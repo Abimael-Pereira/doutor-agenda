@@ -56,7 +56,9 @@ const PricingCard = ({
         throw new Error("Session ID not found");
       }
 
-      await stripe.redirectToCheckout({ sessionId: data.sessionId });
+      await stripe.redirectToCheckout({
+        sessionId: data.sessionId,
+      });
     },
   });
 

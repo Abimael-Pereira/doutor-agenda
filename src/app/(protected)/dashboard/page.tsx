@@ -40,8 +40,14 @@ const DashboardPage = async ({ searchParams }: DashboardPageProps) => {
     redirect("/authentication");
   }
 
-  if (!session.user.clinic) {
+  console.log(session.user.clinic);
+
+  if (!session.user.clinic.id) {
     redirect("/clinic-form");
+  }
+
+  if (session.user.plan === "free") {
+    redirect("/new-subscription");
   }
 
   const { from, to } = await searchParams;

@@ -11,9 +11,6 @@ export const createStripeCheckout = actionClient.action(async () => {
   if (!session) {
     throw new Error("Unauthorized");
   }
-  if (!session.user.clinic) {
-    throw new Error("Clinic not found");
-  }
   if (!process.env.STRIPE_SECRET_KEY) {
     throw new Error("Stripe secret key not found");
   }
@@ -29,6 +26,7 @@ export const createStripeCheckout = actionClient.action(async () => {
     mode: "subscription",
     success_url: `${process.env.NEXT_PUBLIC_URL}/dashboard`,
     cancel_url: `${process.env.NEXT_PUBLIC_URL}/dashboard`,
+    customer_email: session.user.email,
     subscription_data: {
       metadata: {
         userId: session.user.id,

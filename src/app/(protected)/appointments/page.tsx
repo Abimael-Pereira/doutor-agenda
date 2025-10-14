@@ -28,26 +28,26 @@ export default async function AppointmentsPage() {
     redirect("/authentication");
   }
 
-  const clinic = session?.user.clinic;
-  if (!clinic?.id) {
+  if (!session?.user.clinic.id) {
     redirect("/clinic-form");
   }
 
-  // Buscar médicos da clínica
+  if (session.user.plan === "free") {
+    redirect("/new-subscription");
+  }
+
   const doctors = await db.query.doctorsTable.findMany({
-    where: eq(doctorsTable.clinicId, clinic.id),
+    where: eq(doctorsTable.clinicId, session.user.clinic.id),
     orderBy: (table, { asc }) => [asc(table.name)],
   });
 
-  // Buscar pacientes da clínica
   const patients = await db.query.patientsTable.findMany({
-    where: eq(patientsTable.clinicId, clinic.id),
+    where: eq(patientsTable.clinicId, session.user.clinic.id),
     orderBy: (table, { asc }) => [asc(table.name)],
   });
 
-  // Buscar agendamentos da clínica com dados do paciente e médico
   const appointments = await db.query.appointmentsTable.findMany({
-    where: eq(appointmentsTable.clinicId, clinic.id),
+    where: eq(appointmentsTable.clinicId, session.user.clinic.id),
     with: {
       patient: {
         columns: {
