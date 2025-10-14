@@ -26,7 +26,7 @@ interface PricingCardProps {
   price: string;
   priceUnit: string;
   features: string[];
-  userEmail: string;
+  userEmail?: string;
 }
 
 const PricingCard = ({

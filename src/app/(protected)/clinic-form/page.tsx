@@ -1,3 +1,6 @@
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+
 import {
   Dialog,
   DialogContent,
@@ -5,25 +8,35 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import WithAuthentication from "@/hocs/with-authentication";
+import { auth } from "@/lib/auth";
 
 import ClinicForm from "./_components/form";
 
 const ClinicFormPage = async () => {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session?.user) {
+    redirect("/authentication");
+  }
+
+  if (session.user.plan === "free") {
+    redirect("/new-subscription");
+  }
+
   return (
-    <WithAuthentication mustHaveEssentialPlan>
-      <Dialog open>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Adicionar clínica</DialogTitle>
-            <DialogDescription>
-              Adicione uma clínica para continuar.
-            </DialogDescription>
-          </DialogHeader>
-          <ClinicForm />
-        </DialogContent>
-      </Dialog>
-    </WithAuthentication>
+    <Dialog open>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Adicionar clínica</DialogTitle>
+          <DialogDescription>
+            Adicione uma clínica para continuar.
+          </DialogDescription>
+        </DialogHeader>
+        <ClinicForm />
+      </DialogContent>
+    </Dialog>
   );
 };
 
