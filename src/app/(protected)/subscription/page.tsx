@@ -1,3 +1,6 @@
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+
 import {
   PageContainer,
   PageContent,
@@ -6,10 +9,20 @@ import {
   PageHeaderContent,
   PageTitle,
 } from "@/components/ui/page-container";
+import { auth } from "@/lib/auth";
 
 import PricingCard from "./_components/subscription-card";
 
-const SubscriptionPage = () => {
+const SubscriptionPage = async () => {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+  if (!session) {
+    redirect("/login");
+  }
+  if (!session.user.clinic.id) {
+    redirect("/clinic-form");
+  }
   return (
     <PageContainer>
       <PageHeader>
@@ -20,7 +33,7 @@ const SubscriptionPage = () => {
       </PageHeader>
       <PageContent>
         <PricingCard
-          active={false}
+          active={session.user.plan === "essential"}
           planName="Essential"
           description="Para profissionais autônomos ou pequenas clínicas"
           price="R$59"
@@ -33,6 +46,7 @@ const SubscriptionPage = () => {
             "Confirmação manual",
             "Suporte via e-mail",
           ]}
+          userEmail={session.user.email}
         />
       </PageContent>
     </PageContainer>

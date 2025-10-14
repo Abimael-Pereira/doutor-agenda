@@ -24,12 +24,14 @@ export const auth = betterAuth({
         where: eq(schema.usersToClinicsTable.userId, user.id),
         with: {
           clinic: true,
+          user: true,
         },
       });
       const clinic = clinics[0];
       return {
         user: {
           ...user,
+          plan: clinic.user.plan,
           clinic: {
             id: clinic?.clinicId || null,
             name: clinic?.clinic.name || null,
