@@ -17,19 +17,21 @@ const AuthenticationPage = async () => {
   }
 
   return (
-    <div className="flex h-screen w-screen items-center justify-center">
-      <Tabs defaultValue="login">
-        <TabsList>
-          <TabsTrigger value="login">Login</TabsTrigger>
-          <TabsTrigger value="register">Criar conta</TabsTrigger>
-        </TabsList>
-        <TabsContent value="login">
-          <LoginForm />
-        </TabsContent>
-        <TabsContent value="register">
-          <SignUpForm />
-        </TabsContent>
-      </Tabs>
+    <div className="flex min-h-screen w-full items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        <Tabs defaultValue="login" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="login">Login</TabsTrigger>
+            <TabsTrigger value="register">Criar conta</TabsTrigger>
+          </TabsList>
+          <TabsContent value="login">
+            <LoginForm />
+          </TabsContent>
+          <TabsContent value="register">
+            <SignUpForm />
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
   );
 };

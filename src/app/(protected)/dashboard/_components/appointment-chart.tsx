@@ -60,15 +60,22 @@ const AppointmentsChart = ({
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center gap-2">
-        <DollarSign />
-        <CardTitle>Agendamentos e Faturamento</CardTitle>
+      <CardHeader className="flex flex-row items-center gap-2 pb-2">
+        <DollarSign className="h-5 w-5" />
+        <CardTitle className="text-base sm:text-lg">
+          Agendamentos e Faturamento
+        </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-2 sm:px-6">
         <ChartContainer config={chartConfig} className="min-h-[200px]">
           <AreaChart
             data={chartData}
-            margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+            margin={{
+              top: 20,
+              right: 10,
+              left: 0,
+              bottom: 5,
+            }}
           >
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis
@@ -76,12 +83,14 @@ const AppointmentsChart = ({
               tickLine={false}
               tickMargin={10}
               axisLine={false}
+              tick={{ fontSize: 12 }}
             />
             <YAxis
               yAxisId="left"
               tickLine={false}
               axisLine={false}
               tickMargin={8}
+              tick={{ fontSize: 12 }}
             />
             <YAxis
               yAxisId="right"
@@ -90,6 +99,7 @@ const AppointmentsChart = ({
               axisLine={false}
               tickMargin={8}
               tickFormatter={(value) => formatCurrencyInCents(value)}
+              tick={{ fontSize: 12 }}
             />
             <ChartTooltip
               content={

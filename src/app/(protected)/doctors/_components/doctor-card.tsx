@@ -36,40 +36,45 @@ const DoctorCard = ({ doctor }: DoctorCardProps) => {
 
   const availability = getAvailability(doctor);
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex-items-center gap-2">
-          <Avatar className="h-10 w-10">
+    <Card className="flex flex-col">
+      <CardHeader className="pb-3">
+        <div className="flex items-center gap-3">
+          <Avatar className="h-10 w-10 flex-shrink-0">
             <AvatarFallback>{doctorInitials}</AvatarFallback>
           </Avatar>
-          <div>
-            <h3 className="text-sm font-medium">{doctor.name}</h3>
-            <p className="text-muted-foreground text-sm">{doctor.specialty}</p>
+          <div className="min-w-0 flex-1">
+            <h3 className="truncate text-sm font-medium">{doctor.name}</h3>
+            <p className="text-muted-foreground truncate text-xs sm:text-sm">
+              {doctor.specialty}
+            </p>
           </div>
         </div>
       </CardHeader>
       <Separator />
-      <CardContent className="flex flex-col gap-2">
-        <Badge variant="outline">
-          <CalendarIcon className="mr-1" />
-          {availability.from.format("dddd")} a {availability.to.format("dddd")}
+      <CardContent className="flex flex-1 flex-col gap-2 py-3">
+        <Badge variant="outline" className="w-full justify-start text-xs">
+          <CalendarIcon className="mr-1 h-3 w-3" />
+          <span className="truncate">
+            {availability.from.format("dddd")} a{" "}
+            {availability.to.format("dddd")}
+          </span>
         </Badge>
-        <Badge variant="outline">
-          <ClockIcon className="mr-1" />
+        <Badge variant="outline" className="w-full justify-start text-xs">
+          <ClockIcon className="mr-1 h-3 w-3" />
           {availability.from.format("HH:mm")} às{" "}
           {availability.to.format("HH:mm")}
         </Badge>
-        <Badge variant="outline">
-          <DollarSignIcon className="mr-1" />
+        <Badge variant="outline" className="w-full justify-start text-xs">
+          <DollarSignIcon className="mr-1 h-3 w-3" />
           {formatCurrencyInCents(doctor.appointmentPriceInCents)}
         </Badge>
       </CardContent>
       <Separator />
 
-      <CardFooter>
+      <CardFooter className="pt-3">
         <Dialog open={dialogIsOpen} onOpenChange={setDialogIsOpen}>
           <DialogTrigger asChild>
-            <Button className="w-full">Ver detalhes</Button>
+            <Button className="w-full text-sm">Ver detalhes</Button>
           </DialogTrigger>
           <UpsertDoctorForm
             onSuccess={() => setDialogIsOpen(false)}

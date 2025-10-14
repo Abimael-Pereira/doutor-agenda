@@ -82,16 +82,18 @@ const DashboardPage = async ({ searchParams }: DashboardPageProps) => {
             totalPatients={totalPatients}
             totalDoctors={totalDoctors}
           />
-          <div className="grid grid-cols-[2.25fr_1fr] gap-4">
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-[2.25fr_1fr]">
             <AppointmentChart dailyAppointmentsData={dailyAppointmentsData} />
             <TopDoctors doctors={topDoctors} />
           </div>
-          <div className="grid grid-cols-[2.25fr_1fr] gap-4">
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-[2.25fr_1fr]">
             <Card>
-              <CardHeader>
-                <div className="flex items-center gap-3">
-                  <Calendar />
-                  <CardTitle>Agendamentos de Hoje</CardTitle>
+              <CardHeader className="pb-2">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <Calendar className="h-5 w-5" />
+                  <CardTitle className="text-base sm:text-lg">
+                    Agendamentos de Hoje
+                  </CardTitle>
                 </div>
               </CardHeader>
               <CardContent>

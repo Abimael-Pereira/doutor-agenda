@@ -48,26 +48,48 @@ export function DatePicker({
             id="date"
             variant={"outline"}
             className={cn(
-              "justify-start text-left font-normal",
+              "w-full justify-start text-left font-normal sm:w-auto",
               !date && "text-muted-foreground",
             )}
           >
-            <CalendarIcon />
-            {date?.from ? (
-              date.to ? (
+            <CalendarIcon className="h-4 w-4" />
+            <span className="hidden sm:inline">
+              {date?.from ? (
+                date.to ? (
+                  <>
+                    {format(date.from, "LLL dd, y", { locale: ptBR })} -{" "}
+                    {format(date.to, "LLL dd, y", { locale: ptBR })}
+                  </>
+                ) : (
+                  format(date.from, "LLL dd, y")
+                )
+              ) : (
+                <span>Selecione uma data</span>
+              )}
+            </span>
+            <span className="inline truncate text-xs sm:hidden">
+              {date?.from && date?.to ? (
                 <>
-                  {format(date.from, "LLL dd, y", { locale: ptBR })} -{" "}
-                  {format(date.to, "LLL dd, y", { locale: ptBR })}
+                  {format(date.from, "dd/MM", { locale: ptBR })} -{" "}
+                  {format(date.to, "dd/MM", { locale: ptBR })}
                 </>
               ) : (
-                format(date.from, "LLL dd, y")
-              )
-            ) : (
-              <span>Selecione uma data</span>
-            )}
+                <span>Período</span>
+              )}
+            </span>
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="start">
+        <PopoverContent className="w-auto p-0" align="end">
+          <Calendar
+            initialFocus
+            mode="range"
+            defaultMonth={date?.from}
+            selected={date}
+            onSelect={handleDateSelect}
+            numberOfMonths={1}
+            locale={ptBR}
+            className="sm:hidden"
+          />
           <Calendar
             initialFocus
             mode="range"
@@ -76,6 +98,7 @@ export function DatePicker({
             onSelect={handleDateSelect}
             numberOfMonths={2}
             locale={ptBR}
+            className="hidden sm:block"
           />
         </PopoverContent>
       </Popover>
