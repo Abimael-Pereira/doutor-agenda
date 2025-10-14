@@ -6,8 +6,6 @@ import { db } from "@/db";
 import { usersTable } from "@/db/schema";
 
 export const POST = async (request: Request) => {
-  console.log("Received Stripe webhook");
-  
   if (!process.env.STRIPE_SECRET_KEY || !process.env.STRIPE_WEBHOOK_SECRET) {
     throw new Error("Stripe secret key not found");
   }
@@ -17,7 +15,7 @@ export const POST = async (request: Request) => {
   }
   const text = await request.text();
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-    apiVersion: "2025-08-27.basil",
+    apiVersion: "2025-09-30.clover",
   });
 
   let event;
@@ -33,24 +31,24 @@ export const POST = async (request: Request) => {
   }
 
   switch (event.type) {
-    case "checkout.session.completed": {
+    case "customer.subscription.created": {
       if (!event.data.object.id) {
         throw new Error("Subscription ID not found");
       }
-      const { subscription, subscription_details, customer } = event.data
-        .object as unknown as {
+      const {
+        id: subscription,
+        metadata: { userId },
+        customer,
+      } = event.data.object as unknown as {
         customer: string;
-        subscription: string;
-        subscription_details: {
-          metadata: {
-            userId: string;
-          };
+        id: string;
+        metadata: {
+          userId: string;
         };
       };
       if (!subscription) {
         throw new Error("Subscription not found");
       }
-      const userId = subscription_details.metadata.userId;
       if (!userId) {
         throw new Error("User ID not found");
       }
@@ -65,6 +63,8 @@ export const POST = async (request: Request) => {
       break;
     }
     case "customer.subscription.deleted": {
+      console.log("Subscription deleted:", event.data);
+
       if (!event.data.object.id) {
         throw new Error("Subscription ID not found");
       }
@@ -78,6 +78,7 @@ export const POST = async (request: Request) => {
       if (!userId) {
         throw new Error("User ID not found");
       }
+
       await db
         .update(usersTable)
         .set({
@@ -86,6 +87,7 @@ export const POST = async (request: Request) => {
           plan: "free",
         })
         .where(eq(usersTable.id, userId));
+      break;
     }
   }
   return NextResponse.json({
