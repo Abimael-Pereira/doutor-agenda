@@ -1,11 +1,7 @@
-import { Button } from "@/components/ui/button";
+import { redirect } from "next/navigation";
 
 const Home = () => {
-  return (
-    <div>
-      <Button>Click me</Button>
-    </div>
-  );
+  redirect("/dashboard");
 };
 
 export default Home;

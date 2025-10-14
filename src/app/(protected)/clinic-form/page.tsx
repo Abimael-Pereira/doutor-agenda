@@ -1,6 +1,5 @@
-"use client";
-
-import { useRouter } from "next/navigation";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 
 import {
   Dialog,
@@ -9,29 +8,24 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { authClient } from "@/lib/auth-client";
+import { auth } from "@/lib/auth";
 
 import ClinicForm from "./_components/form";
 
-const ClinicFormPage = () => {
-  const router = useRouter();
-  const session = authClient.useSession();
+const ClinicFormPage = async () => {
+  const session = await auth.api.getSession({ headers: await headers() });
 
-  if (!session) {
-    router.push("/login");
-    return null;
+  if (!session?.user) {
+    redirect("/authentication");
   }
 
-  console.log(session.data?.user.plan);
-
-  if (session.data?.user.plan === "free") {
-    router.push("/new-subscription");
-    return null;
+  if (session.user.plan === "free") {
+    redirect("/new-subscription");
   }
 
   const handleOpenChange = (open: boolean) => {
     if (!open) {
-      router.back();
+      redirect("/dashboard");
     }
   };
 
