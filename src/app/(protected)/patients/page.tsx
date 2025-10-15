@@ -53,12 +53,10 @@ const PatientsPage = async () => {
       </PageHeader>
       <PageContent>
         {patients.length === 0 ? (
-          <div className="col-span-full flex flex-col items-center justify-center py-12 text-center">
-            <p className="text-muted-foreground mb-4">
-              Nenhum paciente encontrado
-            </p>
-            <AddPatientButton />
-          </div>
+          <p className="text-muted-foreground col-span-full text-sm">
+            Nenhum paciente encontrado. Adicione um paciente para começar a
+            gerenciar.
+          </p>
         ) : (
           <DataTable data={patients} columns={patientsTableColumns} />
         )}

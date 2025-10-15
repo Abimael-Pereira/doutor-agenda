@@ -4,12 +4,13 @@ import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 
 import PricingCard from "../(protected)/subscription/_components/subscription-card";
+import LogoutButton from "./_components/logout-button";
 
 const SubscriptionPage = async () => {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
-  if (!session) {
+  if (!session?.user) {
     redirect("/authentication");
   }
   if (session.user.plan === "essential") {
@@ -49,27 +50,47 @@ const SubscriptionPage = async () => {
             <span>Pagamento seguro • Cancele quando quiser</span>
           </div>
         </div>
-        {/* </CHANGE> */}
-
-        <div className="flex justify-center">
+        <div>
+          <span className="text-muted-foreground text-sm leading-relaxed text-balance">
+            Para fins de testes, utilize o cartão 4242 4242 4242 4242 com
+            qualquer vencimento futuro no checkout
+          </span>
+        </div>
+        <div className="flex flex-col items-center justify-center gap-10 sm:flex-row md:items-stretch">
           <PricingCard
-            active={false}
+            active={session?.user.plan === "essential"}
             planName="Essential"
             description="Para profissionais autônomos ou pequenas clínicas"
             price="R$59"
             priceUnit="/ mês"
             features={[
-              "Cadastro de até 3 médicos",
+              "Cadastro ilimitado de médicos",
               "Agendamentos ilimitados",
               "Métricas básicas",
               "Cadastro de pacientes",
               "Confirmação manual",
               "Suporte via e-mail",
             ]}
-            userEmail={session.user.email!}
+            userEmail={session?.user.email}
+          />
+          <PricingCard
+            active={session?.user.plan === "premium"}
+            planName="Premium"
+            description="Para clínicas de médio a grande porte"
+            price="R$**"
+            priceUnit="/ mês"
+            features={[
+              "Tudo do Essential",
+              "Métricas completas",
+              "Histórico do paciente",
+              "Atendimento por agente IA",
+              "Confirmação automática",
+              "Suporte prioritário",
+            ]}
+            userEmail={session?.user.email}
+            buttonPlaceholder="Em breve"
           />
         </div>
-        {/* </CHANGE> */}
 
         <div className="space-y-4 pt-8">
           <p className="text-muted-foreground text-sm">
@@ -126,7 +147,10 @@ const SubscriptionPage = async () => {
             </div>
           </div>
         </div>
-        {/* </CHANGE> */}
+
+        <div className="pt-4">
+          <LogoutButton />
+        </div>
       </div>
     </main>
   );

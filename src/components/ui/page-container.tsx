@@ -38,6 +38,14 @@ export const PageActions = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-export const PageContent = ({ children }: { children: React.ReactNode }) => {
-  return <div className="space-y-4 sm:space-y-6">{children}</div>;
+export const PageContent = ({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) => {
+  return (
+    <div className={`space-y-4 sm:space-y-6 ${className}`}>{children}</div>
+  );
 };

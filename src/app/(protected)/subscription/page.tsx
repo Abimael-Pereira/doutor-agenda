@@ -34,7 +34,7 @@ const SubscriptionPage = async () => {
           <PageDescription>Gerencie a sua assinatura</PageDescription>
         </PageHeaderContent>
       </PageHeader>
-      <PageContent>
+      <PageContent className="flex flex-col gap-10 md:flex-row md:items-stretch">
         <PricingCard
           active={session?.user.plan === "essential"}
           planName="Essential"
@@ -42,7 +42,7 @@ const SubscriptionPage = async () => {
           price="R$59"
           priceUnit="/ mês"
           features={[
-            "Cadastro de até 3 médicos",
+            "Cadastro ilimitado de médicos",
             "Agendamentos ilimitados",
             "Métricas básicas",
             "Cadastro de pacientes",
@@ -50,6 +50,23 @@ const SubscriptionPage = async () => {
             "Suporte via e-mail",
           ]}
           userEmail={session?.user.email}
+        />
+        <PricingCard
+          active={session?.user.plan === "premium"}
+          planName="Premium"
+          description="Para clínicas de médio a grande porte"
+          price="R$**"
+          priceUnit="/ mês"
+          features={[
+            "Tudo do Essential",
+            "Métricas completas",
+            "Histórico do paciente",
+            "Atendimento por agente IA",
+            "Confirmação automática",
+            "Suporte prioritário",
+          ]}
+          userEmail={session?.user.email}
+          buttonPlaceholder="Em breve"
         />
       </PageContent>
     </PageContainer>

@@ -77,13 +77,11 @@ export default async function AppointmentsPage() {
       </PageHeader>
       <PageContent>
         {appointments.length === 0 ? (
-          <div className="col-span-full flex flex-col items-center justify-center py-12 text-center">
-            <p className="text-muted-foreground mb-4">
-              Nenhum agendamento encontrado
+            <p className="text-muted-foreground col-span-full text-sm">
+              Nenhum agendamento encontrado. Adicione um agendamento para começar a
+              gerenciar.
             </p>
-            <AddAppointmentButton doctors={doctors} patients={patients} />
-          </div>
-        ) : (
+          ) : (
           <DataTable data={appointments} columns={appointmentsTableColumns} />
         )}
       </PageContent>

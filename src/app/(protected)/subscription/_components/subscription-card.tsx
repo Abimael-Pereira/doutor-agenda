@@ -27,6 +27,7 @@ interface PricingCardProps {
   priceUnit: string;
   features: string[];
   userEmail?: string;
+  buttonPlaceholder?: string;
 }
 
 const PricingCard = ({
@@ -37,6 +38,7 @@ const PricingCard = ({
   priceUnit,
   features,
   userEmail,
+  buttonPlaceholder,
 }: PricingCardProps) => {
   const router = useRouter();
 
@@ -72,8 +74,8 @@ const PricingCard = ({
     );
   };
   return (
-    <Card className="max-w-[280px] space-y-3">
-      <CardHeader className="gap-3">
+    <Card className="flex h-full max-w-[280px] flex-col space-y-3">
+      <CardHeader className="min-h-[9rem] gap-3">
         <CardTitle>{planName}</CardTitle>
         {active && (
           <CardAction>
@@ -92,7 +94,7 @@ const PricingCard = ({
 
       <Separator />
 
-      <CardContent className="space-y-6">
+      <CardContent className="flex-1 space-y-6">
         <div className="space-y-3">
           {features.map((feature, index) => (
             <div key={index} className="flex items-start gap-2">
@@ -110,12 +112,15 @@ const PricingCard = ({
           variant="outline"
           className="w-full bg-transparent"
           onClick={active ? handleManagePlanClick : handleSubscribeClick}
-          disabled={createStripeCheckoutAction.isExecuting}
+          disabled={
+            createStripeCheckoutAction.isExecuting || !!buttonPlaceholder
+          }
         >
           {createStripeCheckoutAction.isExecuting && (
             <Loader2 className="mr-1 h-4 w-4 animate-spin" />
           )}
-          {active ? "Gerenciar assinatura" : "Fazer assinatura"}
+          {buttonPlaceholder ||
+            (active ? "Gerenciar assinatura" : "Fazer assinatura")}
         </Button>
       </CardFooter>
     </Card>
